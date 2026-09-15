@@ -4,11 +4,13 @@
 
 The AWS console showed an active **Free plan**, **$100 credit remaining**, and **29 days remaining on the plan**. The credit row lists an expiry of 13 April 2027, but that does not extend the Free plan. AWS says access ends when the Free plan period ends or credits are exhausted, whichever comes first. Do not upgrade to the Paid plan as part of this deployment.
 
-## Prepared configuration — not launched
+## Deployed configuration — verified 15 September 2026
 
-| Setting | Draft value |
+| Setting | Deployed value |
 | --- | --- |
 | Name | `jocky-lab` |
+| Instance | `i-0a536145fe1cba302` |
+| Current public IP | `13.200.5.55` (automatically assigned) |
 | Region | Mumbai (`ap-south-1`) |
 | OS | Canonical Ubuntu Server 24.04 LTS, x86-64 |
 | VM | `m7i-flex.large`, 2 vCPUs, 8 GiB RAM |
@@ -21,9 +23,9 @@ The AWS console showed an active **Free plan**, **$100 credit remaining**, and *
 
 The console allows this VM on the Free plan. Its displayed Linux price is **$0.10075/hour**, approximately **$70.12 for 29 days of continuous operation**. Public IPv4 is normally $0.005/hour (approximately $3.48 over 29 days); disk and any chargeable transfer are additional. Free allowances can reduce usage. These are credit-consumption estimates, not a guaranteed total or an approval to upgrade billing. See [AWS IPv4 pricing](https://aws.amazon.com/vpc/pricing/) and [EBS pricing](https://aws.amazon.com/ebs/pricing/).
 
-8 GiB is an initial engineering choice for the combined stack and source builds; cloud resource usage has not yet been measured. The lower-cost `t3.medium` was disabled in this account's Free plan selector.
+8 GiB is an initial engineering choice for the combined stack and source builds; initial pre-build checks showed about 7 GiB available RAM and 26 GiB free disk. Sustained application load has not been benchmarked. The lower-cost `t3.medium` was disabled in this account's Free plan selector.
 
-## Launch and installation
+## Reproducing launch and installation
 
 1. Review the draft and approve creation of the dedicated SSH key and public web access before launch. Keep the private key on the administrator's machine, outside Git.
 2. Recheck the SSH source IP. Browser proxy/VPN addresses can differ from the IP used by a terminal. Use a verified administrator IP, never `0.0.0.0/0` for SSH.
@@ -42,6 +44,13 @@ The console allows this VM on the Free plan. Its displayed Linux price is **$0.1
 - The hostname opens with trusted HTTPS: DNS, firewall and certificates work.
 - Each Windows PC appears online, completes its own scan, and returns evidence: the cross-machine workflow works.
 
-These are separate checks; none is a substitute for the next. At this checkpoint, the VM, trusted public HTTPS and two-PC test remain pending. Bootstrap validation is shell syntax only, not a completed Ubuntu run.
+These are separate checks; none is a substitute for the next. The VM, Ubuntu bootstrap, six-container deployment, trusted public HTTPS, 11 cloud smoke checks and real Mac-to-AWS scan/evidence/report workflow passed. The actual Windows PC tests remain pending. See [verification status](STATUS.md) for evidence locations.
 
-Before the Free plan ends, export evidence and database backups to a location you control. Stopping a VM stops compute usage but retained disks still use storage; terminating this draft's VM deletes its root disk. Do not use termination as a substitute for a backup. Check the live plan and credit status before any later session.
+Before the Free plan ends, export evidence and database backups to a location you control. Stopping a VM stops compute usage but retained disks still use storage; terminating this VM deletes its root disk. Do not use termination as a substitute for a backup. Check the live plan and credit status before any later session.
+
+## Current maintenance notes
+
+- Source was transferred from tracked Git files to `/opt/jocky`; this deployment is not a Git clone. Transfer reviewed updates over SSH and rebuild the affected service with both Compose files.
+- This Mac's public egress IP changed during setup. If SSH times out, verify its current IP and update the existing single-IP SSH restriction; do not open SSH to everyone.
+- DuckDNS points to the current automatically assigned EC2 IP. After stop/start, compare the instance IP and update DuckDNS if it changed. No automatic DNS updater is installed.
+- Keep `.env`, SSH keys, login details, agent state and evidence out of Git. Backups and restore testing remain pending.

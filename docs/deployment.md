@@ -1,6 +1,6 @@
 # Cloud deployment
 
-Target: a small Linux server running the Docker stack. The current target is an AWS Ubuntu VM; see the [AWS setup and account limits](aws-cloud.md). An ARM server is also compatible with the multi-architecture base images and source builds. No public deployment has occurred yet.
+Target: a small Linux server running the Docker stack. The current target is an AWS Ubuntu VM; see the [AWS setup and account limits](aws-cloud.md). An ARM server is also compatible with the multi-architecture base images and source builds. Public HTTPS and a real Mac-to-AWS scan/evidence/report workflow passed on 15 September 2026. Windows acceptance remains pending.
 
 ## Prerequisites
 
@@ -22,7 +22,7 @@ Caddy terminates trusted TLS and routes `/api/agent/*` and `/ws` to the API. Bro
 
 - Logs: `docker compose logs --tail 100 api dashboard`.
 - Stop: `docker compose stop` (retains data).
-- Update: `git pull --ff-only`, review changes, then rebuild/restart. Back up before schema changes.
+- Update: transfer reviewed tracked source over SSH (the current `/opt/jocky` is not a Git clone), then rebuild/restart using both Compose files. For a separately configured clone, use `git pull --ff-only`. Back up before schema changes.
 - MinIO is pinned to the tested official Quay image because its Docker Hub pull failed during setup. Review vendor maintenance and vulnerability status before any real sensitive production use.
 - Plan encrypted backups of database and object store. Test restore; never rely solely on the live free-tier VM.
 - Production memory/sustained-load targets are unbenchmarked. Start with on-demand scans on two PCs; measure actual load before adding scheduled jobs or more endpoints.

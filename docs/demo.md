@@ -8,6 +8,12 @@
 
 The browser does not inspect a remote PC by itself. That PC must run an enrolled agent.
 
+## Cloud demonstration already verified
+
+Open https://jocky-lab.duckdns.org. In **Cases**, select **JOCKY DEMO · AWS HTTPS verification**. Its report and verified evidence come from a real Mac scan sent over public HTTPS. The scan returned 846 observations at that moment; another scan can return a different count.
+
+Private proof files are `.local/aws/demo-verification.json` and `.local/aws/demo-report.html`. The Windows test below still needs real Windows agents; Mac results do not complete it.
+
 ## Walkthrough and success criteria
 
 | Step | Action | Visible proof |

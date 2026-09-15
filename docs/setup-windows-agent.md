@@ -8,7 +8,19 @@ In GitHub open the repository → Actions → latest **successful** Verify JOCKY
 
 Alternatively install Rust from its official source and the Visual Studio C++ build tools, then run `cargo build --release -p jocky-agent` on Windows.
 
-## Foreground test first
+## Prepared AWS package: first PC
+
+The local handoff ZIP is `.local/releases/jocky-aws-windows.zip`, prepared from successful CI binaries at source commit `321438f`. It contains `jocky-agent.exe`, `jocky.exe`, `START-JOCKY.cmd`, instructions and SHA-256 checksums. It contains no token or password. The pinned launcher source is `infrastructure/installers/start-windows-demo.cmd`; its embedded hash must be updated deliberately when changing the binary.
+
+1. Copy the ZIP to the Windows PC and extract it.
+2. Sign in at https://jocky-lab.duckdns.org and open **Endpoints → Enroll endpoint**. Create a separate one-time token for this PC.
+3. Double-click `START-JOCKY.cmd`, paste the token into its hidden prompt, and leave the window open.
+4. Confirm the PC appears online, then run Quick Scan. Record job/results/evidence before calling the test passed.
+5. Press Ctrl+C to stop. Restarting the launcher reuses that PC's identity; do not copy its state file to another PC.
+
+The launcher checks the agent binary hash, configures the AWS URL, restricts `%LOCALAPPDATA%\JockyLab` to the user/SYSTEM/administrators, and limits file collection to its `Collection` subdirectory. Process command lines are disabled. This is a foreground test, not a service installation. The launcher has not yet been executed on a real Windows PC. If Windows blocks the unsigned prototype, record the message; do not disable protections.
+
+## Manual foreground alternative
 
 In Dashboard → Endpoints → Enroll endpoint, create a token. On the Windows PC open PowerShell in the extracted binary directory:
 

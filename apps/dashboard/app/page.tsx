@@ -420,7 +420,7 @@ function App() {
         >
           <Shield className="cyan" size={30} />
           <h2>Access your workspace</h2>
-          <p>Sign in to JOCKY Local Lab</p>
+          <p>Sign in to your JOCKY workspace</p>
           <label>
             Email
             <input
@@ -449,9 +449,7 @@ function App() {
             </div>
           )}
           <p className="small">
-            Your generated local credentials are in the project’s{" "}
-            <code>.env</code> file. Run{" "}
-            <code>python3 scripts/login-info.py</code> to view them privately.
+            Use the credentials provided by your workspace administrator.
           </p>
         </form>
       </div>
@@ -463,9 +461,9 @@ function App() {
           J<span>O</span>CKY<span className="brand-dot">.</span>
         </div>
         <div className="workspace">
-          <div className="workspace-icon">JL</div>
+          <div className="workspace-icon">JW</div>
           <div>
-            <b>JOCKY Local Lab</b>
+            <b>JOCKY Workspace</b>
             <small>Investigation workspace</small>
           </div>
           <ChevronRight size={14} />

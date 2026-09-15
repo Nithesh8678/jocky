@@ -2,7 +2,7 @@
 
 **Evidence-led, read-only endpoint investigation.** A Rust forensic agent and language, FastAPI/PostgreSQL backend, and Next.js command center.
 
-JOCKY is a working prototype with a real Mac end-to-end verification. The required two-Windows-PC acceptance test is still pending. See [verification status](docs/STATUS.md) and the [feature matrix](docs/features.md) for supported behavior and limits. Current cloud target: AWS EC2 Ubuntu; see [AWS setup and Free plan limits](docs/aws-cloud.md). The instance is not launched yet.
+JOCKY is a working prototype deployed at [jocky-lab.duckdns.org](https://jocky-lab.duckdns.org), with a real Mac-to-AWS end-to-end verification. The required two-Windows-PC acceptance test is still pending. See [verification status](docs/STATUS.md) and the [feature matrix](docs/features.md) for supported behavior and limits. Current cloud target: AWS EC2 Ubuntu; see [AWS setup and Free plan limits](docs/aws-cloud.md). Trusted HTTPS, cloud authentication, scanning, evidence verification and report generation passed on 15 September 2026.
 
 ## Open what we built
 

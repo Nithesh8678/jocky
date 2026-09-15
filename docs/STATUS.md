@@ -1,6 +1,6 @@
 # JOCKY verification status
 
-Checked 15 September 2026. **Working prototype, with a real Mac agent and production Docker UI verified. Public deployment and the two-real-Windows-PC acceptance test are pending.** The full project brief has additional unfinished requirements; see [features.md](features.md).
+Checked 15 September 2026. **Working prototype deployed on AWS with trusted HTTPS and a real Mac-to-AWS workflow verified. The two-real-Windows-PC acceptance test is pending.** The full project brief has additional unfinished requirements; see [features.md](features.md).
 
 ## Boundaries
 
@@ -19,9 +19,22 @@ Checked 15 September 2026. **Working prototype, with a real Mac agent and produc
 - GitHub Actions builds/tests passed on Windows, Linux and macOS, plus backend and dashboard checks. Current commit status is visible in [Actions](https://github.com/Nithesh8678/jocky/actions). A build-runner success is not a Windows service installation test.
 - Private repository: [Nithesh8678/jocky](https://github.com/Nithesh8678/jocky). Credentials, endpoint telemetry and artifacts remain outside Git.
 
+## Verified AWS deployment
+
+- Public dashboard: https://jocky-lab.duckdns.org. All six cloud containers run; TLS is publicly trusted.
+- Fresh cloud secrets were generated separately from the local lab.
+- `scripts/verify-cloud.py`: 11 checks passed for HTTPS/HSTS, backing-service health, anonymous denial, protected login cookies, authenticated resource reads, origin rejection and logout.
+- A separately enrolled real Mac completed a Quick Scan with 846 observations and no collector errors. A harmless self-detection script completed with one observation and one detection.
+- Case `98442b5d-ed38-43be-af6b-ddb760076f9f` contains two SHA-256-verified evidence objects. Timeline, relationship graph, IOC hunt and HTML report generation passed. Counts describe this snapshot only.
+- Cloud-neutral sign-in/sidebar wording passes the production Docker build locally. Upload/restart is pending because SSH reconnection timed out after the Mac public egress IP changed; the live site still shows the earlier local-lab wording. The initial deployed source is `9730096`.
+- Windows ZIP prepared from CI source commit `321438f`; archive integrity checked. One real PC is available, but its launcher, enrollment, collectors and service behavior are not yet verified.
+
 ## Local proof and output
 
-- Dashboard: http://127.0.0.1:3100
+- Local dashboard: http://127.0.0.1:3100
+- `.local/aws/verification.json`: public HTTPS/authentication checks.
+- `.local/aws/demo-verification.json` and `.local/aws/demo-report.html`: real Mac-to-AWS workflow and case report.
+- `.local/releases/jocky-aws-windows.zip`: first-PC handoff package; no enrollment token included.
 - `.local/final-verification.log`: final local test/build output.
 - `.local/demo-workflow.log` and `.local/verification.json`: real-agent workflow results.
 - `.local/demo-report.html`: generated case report, containing local endpoint information.
@@ -32,7 +45,7 @@ These local files are intentionally ignored by Git. Use [the beginner walkthroug
 
 ## Remaining acceptance and limitations
 
-1. Launch the prepared AWS Ubuntu VM, deploy fresh cloud secrets and verify trusted HTTPS. The console confirmed $100 credit and 29 Free-plan days remaining on 15 September 2026. [AWS setup](aws-cloud.md) records the unlaunched draft and verification steps; Oracle and GCP are no longer the active deployment target.
+1. Track the AWS Free plan and export data before access expires. The console showed $100 credit and 29 days remaining before launch on 15 September 2026; this is a dated observation, not a live balance. See [AWS operations](aws-cloud.md).
 2. Install/enroll agents on the owner's two real Windows PCs. Verify service restart/reconnect, supported collectors and the two-PC case/IOC workflow.
 3. AI is disabled. A configured provider and its responses have not been live-tested. Optional YARA is also not enabled or live-tested.
 4. Production signing, backups/restore, sustained load and the additional feature gaps in features.md remain unfinished. Compiler Lab currently compares AST representations; it does not produce native binaries.
