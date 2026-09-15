@@ -69,3 +69,24 @@ The uninstall script retains identity/config/logs for deliberate review. Disable
 ## Completion check
 
 Windows compilation is not proof of a successful Windows Service installation. Record the actual PC hostname, screenshot of online status, Quick Scan job ID, script result ID, and verified evidence IDs. Repeat for PC 2.
+
+## Enrollment connection errors
+
+`error sending request` is a transport failure, not proof of an invalid token. Check the same PC's browser first, then run:
+
+```powershell
+Resolve-DnsName jocky-lab.duckdns.org
+Test-NetConnection jocky-lab.duckdns.org -Port 443
+curl.exe -I https://jocky-lab.duckdns.org/api/health
+```
+
+A successful `HEAD` response may be 200 or 405; either proves that DNS/TCP/TLS reached an HTTP server. A timeout, DNS error or certificate error needs its exact message. Never add `-k` or disable certificate checks. Check Windows date/time if certificate validity fails.
+
+New agent builds include underlying connection-error causes and a token-free check:
+
+```powershell
+$env:JOCKY_SERVER_URL = 'https://jocky-lab.duckdns.org'
+.\jocky-agent.exe --check-connection
+```
+
+This only requests server health; it does not enroll or collect observations. The original `321438f` handoff binary does not support this flag. Browser/curl success alongside an agent certificate failure can indicate a different proxy or certificate-trust configuration; diagnose the cause before changing trust settings.

@@ -67,6 +67,19 @@ fn save(path: &PathBuf, v: &Value) -> Result<(), String> {
     f.write_all(serde_json::to_string(v).unwrap().as_bytes())
         .map_err(|e| e.to_string())
 }
+fn transport_error(error: reqwest::Error) -> String {
+    use std::error::Error;
+    // Log transport causes, never request headers, bodies or URL credentials.
+    let error = error.without_url();
+    let mut message = error.to_string();
+    let mut cause = error.source();
+    while let Some(source) = cause {
+        message.push_str(": ");
+        message.push_str(&source.to_string());
+        cause = source.source();
+    }
+    message
+}
 fn decode(r: reqwest::blocking::Response) -> Result<Value, String> {
     let status = r.status();
     if !status.is_success() {
@@ -101,6 +114,21 @@ fn main_loop() -> Result<(), String> {
         .redirect(reqwest::redirect::Policy::none())
         .build()
         .map_err(|e| e.to_string())?;
+    if std::env::args().any(|s| s == "--check-connection") {
+        let response = client
+            .get(format!("{server}/api/health"))
+            .send()
+            .map_err(transport_error)?;
+        let health = decode(response)?;
+        if health["status"] != "healthy" {
+            return Err("Server responded but did not report healthy".into());
+        }
+        println!(
+            "{}",
+            json!({"event":"connection_check_passed","server":server})
+        );
+        return Ok(());
+    }
     let path = config_path();
     let mut identity: Value = if path.exists() {
         #[cfg(unix)]
@@ -128,7 +156,7 @@ fn main_loop() -> Result<(), String> {
             .first()
             .and_then(|o| o.data["hostname"].as_str())
             .unwrap_or("unknown");
-        let mut id=decode(client.post(format!("{server}/api/agent/enroll")).json(&json!({"token":token,"hostname":hostname,"os":std::env::consts::OS,"architecture":std::env::consts::ARCH,"agent_version":VERSION})).send().map_err(|e|e.to_string())?)?;
+        let mut id=decode(client.post(format!("{server}/api/agent/enroll")).json(&json!({"token":token,"hostname":hostname,"os":std::env::consts::OS,"architecture":std::env::consts::ARCH,"agent_version":VERSION})).send().map_err(transport_error)?)?;
         id["server"] = server.clone().into();
         save(&path, &id)?;
         id
@@ -162,7 +190,7 @@ fn main_loop() -> Result<(), String> {
                     .bearer_auth(&credential)
                     .json(&heartbeat)
                     .send()
-                    .map_err(|e| e.to_string())?,
+                    .map_err(transport_error)?,
             )?;
             let jobs = decode(
                 client
@@ -170,7 +198,7 @@ fn main_loop() -> Result<(), String> {
                     .bearer_auth(&credential)
                     .json(&json!({}))
                     .send()
-                    .map_err(|e| e.to_string())?,
+                    .map_err(transport_error)?,
             )?;
             for envelope in jobs.as_array().ok_or("Invalid job list")? {
                 let payload = envelope["payload"]
@@ -223,7 +251,7 @@ fn main_loop() -> Result<(), String> {
                         .bearer_auth(&credential)
                         .json(&json!({"lease_id":lease}))
                         .send()
-                        .map_err(|e| e.to_string())?,
+                        .map_err(transport_error)?,
                 )?;
                 println!(
                     "{}",
@@ -251,7 +279,7 @@ fn main_loop() -> Result<(), String> {
                         .bearer_auth(&credential)
                         .json(&body)
                         .send()
-                        .map_err(|e| e.to_string())
+                        .map_err(transport_error)
                         .and_then(decode)
                     {
                         Ok(_) => {
