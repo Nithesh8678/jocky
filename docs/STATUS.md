@@ -32,7 +32,7 @@ These local files are intentionally ignored by Git. Use [the beginner walkthroug
 
 ## Remaining acceptance and limitations
 
-1. Obtain an Oracle account, available Always Free A1 VM, and DNS hostname; deploy fresh cloud secrets and verify trusted HTTPS. The [Oracle assessment](oracle-cloud.md) is an estimate supported by local measurements, not a completed deployment.
+1. Launch the prepared AWS Ubuntu VM, deploy fresh cloud secrets and verify trusted HTTPS. The console confirmed $100 credit and 29 Free-plan days remaining on 15 September 2026. [AWS setup](aws-cloud.md) records the unlaunched draft and verification steps; Oracle and GCP are no longer the active deployment target.
 2. Install/enroll agents on the owner's two real Windows PCs. Verify service restart/reconnect, supported collectors and the two-PC case/IOC workflow.
 3. AI is disabled. A configured provider and its responses have not been live-tested. Optional YARA is also not enabled or live-tested.
 4. Production signing, backups/restore, sustained load and the additional feature gaps in features.md remain unfinished. Compiler Lab currently compares AST representations; it does not produce native binaries.

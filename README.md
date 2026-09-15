@@ -2,7 +2,7 @@
 
 **Evidence-led, read-only endpoint investigation.** A Rust forensic agent and language, FastAPI/PostgreSQL backend, and Next.js command center.
 
-JOCKY is a working prototype with a real Mac end-to-end verification. The required two-Windows-PC acceptance test is still pending. See [verification status](docs/STATUS.md) and the [feature matrix](docs/features.md) for supported behavior and limits. Cloud target: Oracle Cloud Ampere A1, subject to account/capacity verification; see [Oracle setup](docs/oracle-cloud.md).
+JOCKY is a working prototype with a real Mac end-to-end verification. The required two-Windows-PC acceptance test is still pending. See [verification status](docs/STATUS.md) and the [feature matrix](docs/features.md) for supported behavior and limits. Current cloud target: AWS EC2 Ubuntu; see [AWS setup and Free plan limits](docs/aws-cloud.md). The instance is not launched yet.
 
 ## Open what we built
 
@@ -72,6 +72,7 @@ Verification writes local reports under `.local/`. They can contain endpoint dat
 - [API](docs/api.md)
 - [Database](docs/database.md)
 - [Deployment](docs/deployment.md)
+- [AWS demo setup](docs/aws-cloud.md)
 - [Oracle Cloud assessment](docs/oracle-cloud.md)
 - [Feature matrix](docs/features.md)
 

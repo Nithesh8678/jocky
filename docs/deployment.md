@@ -1,6 +1,6 @@
 # Cloud deployment
 
-Target: a small Linux server running the Docker stack. An ARM server is compatible with the multi-architecture base images and source builds. Oracle A1 is the proposed target; no public deployment has occurred yet.
+Target: a small Linux server running the Docker stack. The current target is an AWS Ubuntu VM; see the [AWS setup and account limits](aws-cloud.md). An ARM server is also compatible with the multi-architecture base images and source builds. No public deployment has occurred yet.
 
 ## Prerequisites
 
