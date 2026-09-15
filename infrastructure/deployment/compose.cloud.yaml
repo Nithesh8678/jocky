@@ -1,0 +1,14 @@
+services:
+  caddy:
+    image: caddy:2-alpine
+    environment:
+      JOCKY_DOMAIN: ${JOCKY_DOMAIN:?Set your real domain}
+    ports: ["80:80", "443:443"]
+    volumes:
+      - ./infrastructure/deployment/Caddyfile:/etc/caddy/Caddyfile:ro
+      - caddy_data:/data
+      - caddy_config:/config
+    depends_on: [api, dashboard]
+volumes:
+  caddy_data:
+  caddy_config:

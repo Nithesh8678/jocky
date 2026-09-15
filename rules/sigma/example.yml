@@ -1,0 +1,9 @@
+title: JOCKY DEMO exact process path
+logsource:
+  product: windows
+  category: process_creation
+detection:
+  selection:
+    Image: C:\JockyDemo\benign-demo.exe
+  condition: selection
+level: low

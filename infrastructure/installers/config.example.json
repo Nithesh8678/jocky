@@ -1,0 +1,6 @@
+{
+  "JOCKY_SERVER_URL": "https://jocky.example.com",
+  "ENROLLMENT_TOKEN": "PASTE_ONE_TIME_TOKEN",
+  "JOCKY_AGENT_STATE": "/var/lib/jocky/agent-state.json",
+  "JOCKY_SAFE_PATHS": "/var/lib/jocky/collection"
+}

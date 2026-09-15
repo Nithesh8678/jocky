@@ -1,0 +1,5 @@
+rule suspicious_word_powershell {
+    when: process.name == "powershell.exe" and process.parent.name == "winword.exe"
+    severity: high
+    message: "Microsoft Word launched PowerShell; investigate context"
+}

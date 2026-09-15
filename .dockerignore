@@ -1,0 +1,10 @@
+.git
+.local
+.venv
+.env
+node_modules
+**/node_modules
+**/.next
+target
+**/__pycache__
+**/public/monaco/vs

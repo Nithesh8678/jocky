@@ -1,0 +1,51 @@
+name: Verify JOCKY
+on: [push, pull_request, workflow_dispatch]
+permissions:
+  contents: read
+jobs:
+  rust:
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, windows-latest, macos-latest]
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dtolnay/rust-toolchain@stable
+      - run: cargo test --workspace --locked
+      - run: cargo build --release --workspace --locked
+      - uses: actions/upload-artifact@v4
+        with:
+          name: jocky-${{ matrix.os }}
+          path: |
+            target/release/jocky
+            target/release/jocky.exe
+            target/release/jocky-agent
+            target/release/jocky-agent.exe
+          if-no-files-found: error
+  dashboard:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+        with: {version: 11.19.0}
+      - uses: actions/setup-node@v4
+        with: {node-version: 24, cache: pnpm}
+      - run: pnpm install --frozen-lockfile
+      - run: node scripts/prepare-editor.mjs
+      - run: pnpm typecheck
+      - run: pnpm build
+  api:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: {python-version: '3.12'}
+      - uses: dtolnay/rust-toolchain@stable
+      - run: pip install -r apps/api/requirements.lock.txt
+      - run: cargo build --workspace --locked
+      - run: python scripts/configure.py
+      - run: docker compose up -d postgres redis minio
+      - run: docker compose exec -T postgres sh -c 'until pg_isready -U jocky; do sleep 1; done'
+      - run: PYTHONPATH=apps/api alembic -c apps/api/alembic.ini upgrade head
+      - run: PYTHONPATH=apps/api pytest tests/test_api.py -q --tb=short

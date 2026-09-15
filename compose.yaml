@@ -52,6 +52,7 @@ services:
       dockerfile: infrastructure/docker/dashboard.Dockerfile
     environment:
       API_INTERNAL_URL: http://api:8000
+      JOCKY_PUBLIC_URL: ${JOCKY_PUBLIC_URL}
     ports: ["127.0.0.1:3100:3100"]
     depends_on: [api]
 volumes:

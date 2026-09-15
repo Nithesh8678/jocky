@@ -3,7 +3,23 @@ use std::{path::PathBuf,time::Duration};
 use hmac::{Hmac,Mac};use sha2::Sha256;
 use reqwest::blocking::Client;
 use jocky_common::VERSION;
-fn main(){if let Err(e)=main_loop(){eprintln!("{}",json!({"level":"error","component":"agent","message":e}));std::process::exit(1)}}
+use std::sync::atomic::{AtomicBool,Ordering};
+static STOP:AtomicBool=AtomicBool::new(false);
+#[cfg(windows)]mod service;
+fn configure()->Result<(),String>{
+ let args:Vec<_>=std::env::args().collect();
+ if let Some(i)=args.iter().position(|s|s=="--config"){
+ let path=args.get(i+1).ok_or("Missing configuration path")?;
+ let raw=std::fs::read_to_string(path).map_err(|e|e.to_string())?;
+ let config:serde_json::Map<String,Value>=serde_json::from_str(&raw).map_err(|e|e.to_string())?;
+ for(k,v)in config{if !["JOCKY_SERVER_URL","ENROLLMENT_TOKEN","JOCKY_AGENT_STATE","JOCKY_SAFE_PATHS","JOCKY_COLLECT_COMMAND_LINES"].contains(&k.as_str()){return Err(format!("Unknown config key: {k}"))}std::env::set_var(k,v.as_str().ok_or("Config values must be strings")?);}
+ }Ok(())
+}
+fn run()->Result<(),String>{configure()?;
+ #[cfg(windows)]if std::env::args().any(|s|s=="--service"){return service::dispatch();}
+ main_loop()
+}
+fn main(){if let Err(e)=run(){eprintln!("{}",json!({"level":"error","component":"agent","message":e}));std::process::exit(1)}}
 fn config_path()->PathBuf{std::env::var("JOCKY_AGENT_STATE").map(PathBuf::from).unwrap_or_else(|_|std::env::current_dir().unwrap().join(".jocky-agent.json"))}
 fn save(path:&PathBuf,v:&Value)->Result<(),String>{use std::io::Write;let mut options=std::fs::OpenOptions::new();options.write(true).create_new(true);#[cfg(unix)]{use std::os::unix::fs::OpenOptionsExt;options.mode(0o600);}let mut f=options.open(path).map_err(|e|e.to_string())?;f.write_all(serde_json::to_string(v).unwrap().as_bytes()).map_err(|e|e.to_string())}
 fn decode(r:reqwest::blocking::Response)->Result<Value,String>{let status=r.status();if !status.is_success(){return Err(format!("Server returned {status}"))}r.json().map_err(|e|e.to_string())}
@@ -21,7 +37,7 @@ fn main_loop()->Result<(),String>{
  let credential=identity["credential"].take().as_str().ok_or("Invalid identity")?.to_string();let endpoint=identity["endpoint_id"].as_str().ok_or("Invalid identity")?.to_string();
  println!("{}",json!({"event":"agent_started","endpoint_id":endpoint,"version":VERSION,"server":server}));
  let mut failures=0u32;
- loop{let cycle=(||->Result<(),String>{
+ loop{if STOP.load(Ordering::Relaxed){return Ok(())}let cycle=(||->Result<(),String>{
  let heartbeat=json!({"user":std::env::var("USER").or_else(|_|std::env::var("USERNAME")).ok(),"agent_version":VERSION});
  decode(client.post(format!("{server}/api/agent/heartbeat")).bearer_auth(&credential).json(&heartbeat).send().map_err(|e|e.to_string())?)?;
  let jobs=decode(client.post(format!("{server}/api/agent/poll")).bearer_auth(&credential).json(&json!({})).send().map_err(|e|e.to_string())?)?;
@@ -41,6 +57,6 @@ fn main_loop()->Result<(),String>{
  }Ok(())})();
  match cycle{Ok(())=>failures=0,Err(e)=>{failures=(failures+1).min(5);eprintln!("{}",json!({"event":"reconnect","error":e,"attempt":failures}));}}
  if std::env::args().any(|s|s=="--once"){return if failures==0{Ok(())}else{Err("Agent cycle failed".into())}}
- std::thread::sleep(Duration::from_secs((5*2u64.pow(failures)).min(60)));
+ for _ in 0..(5*2u64.pow(failures)).min(60){if STOP.load(Ordering::Relaxed){return Ok(())}std::thread::sleep(Duration::from_secs(1));}
  }
 }

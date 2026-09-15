@@ -1,0 +1,21 @@
+[Unit]
+Description=JOCKY read-only forensic agent
+After=network-online.target
+Wants=network-online.target
+[Service]
+Type=simple
+User=jocky
+Group=jocky
+WorkingDirectory=/var/lib/jocky
+ExecStart=/usr/local/bin/jocky-agent --config /etc/jocky/config.json
+Restart=on-failure
+RestartSec=10
+NoNewPrivileges=true
+ProtectSystem=strict
+ProtectHome=read-only
+PrivateTmp=false
+ReadWritePaths=/var/lib/jocky
+RestrictSUIDSGID=true
+UMask=0077
+[Install]
+WantedBy=multi-user.target

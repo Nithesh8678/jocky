@@ -8,7 +8,7 @@ async function proxy(req:NextRequest,context:{params:Promise<{path:string[]}>}){
  if(path.some(s=>s==='..'||s==='.'||s.includes('/')||s.includes('\\')))return NextResponse.json({detail:'Invalid path'},{status:400});
  if(path[0]==='agent')return NextResponse.json({detail:'Agents use the dedicated API listener'},{status:404});
  if(req.method!=='GET'){
-   const origin=req.headers.get('origin');if(origin&&origin!==req.nextUrl.origin)return NextResponse.json({detail:'Invalid origin'},{status:403});
+   const origin=req.headers.get('origin');if(origin&&origin!==(process.env.JOCKY_PUBLIC_URL||'http://127.0.0.1:3100'))return NextResponse.json({detail:'Invalid origin'},{status:403});
    if(Number(req.headers.get('content-length')||0)>1048576)return NextResponse.json({detail:'Body too large'},{status:413});
  }
  const isLogin=path.join('/')==='auth/login',isLogout=path.join('/')==='auth/logout';
