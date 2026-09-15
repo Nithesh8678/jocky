@@ -1,1 +1,14 @@
-{"name":"jocky","private":true,"packageManager":"pnpm@11.19.0","scripts":{"dev":"pnpm --filter @jocky/dashboard dev","build":"pnpm --filter @jocky/dashboard build","typecheck":"pnpm --filter @jocky/dashboard typecheck","verify":"bash scripts/verify.sh"}}
+{
+  "name": "jocky",
+  "private": true,
+  "packageManager": "pnpm@11.19.0",
+  "scripts": {
+    "dev": "pnpm --filter @jocky/dashboard dev",
+    "build": "pnpm --filter @jocky/dashboard build",
+    "typecheck": "pnpm --filter @jocky/dashboard typecheck",
+    "verify": "bash scripts/verify.sh"
+  },
+  "devDependencies": {
+    "prettier": "^3.9.6"
+  }
+}

@@ -1,6 +1,6 @@
 hunt demo_agent {
     p = processes()
-    matches = p where name == "jocky-agent"
+    matches = p where name == "jocky-agent" or name == "jocky-agent.exe"
     report matches
     if len(matches) > 0 {
         alert "JOCKY DEMO: the forensic agent itself was observed"

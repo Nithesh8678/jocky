@@ -1,0 +1,9 @@
+.local
+.venv
+node_modules
+apps/dashboard/node_modules
+apps/dashboard/public/monaco
+apps/dashboard/.next
+target
+pnpm-lock.yaml
+docs/PROJECT_BRIEF.md
