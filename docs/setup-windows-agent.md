@@ -18,7 +18,7 @@ The local handoff ZIP is `.local/releases/jocky-aws-windows.zip`, prepared from 
 4. Confirm the PC appears online, then run Quick Scan. Record job/results/evidence before calling the test passed.
 5. Press Ctrl+C to stop. Restarting the launcher reuses that PC's identity; do not copy its state file to another PC.
 
-The launcher checks the agent binary hash, configures the AWS URL, restricts `%LOCALAPPDATA%\JockyLab` to the user/SYSTEM/administrators, and limits file collection to its `Collection` subdirectory. Process command lines are disabled. This is a foreground test, not a service installation. The launcher has not yet been executed on a real Windows PC. If Windows blocks the unsigned prototype, record the message; do not disable protections.
+The launcher checks the agent binary hash, configures the AWS URL, restricts `%LOCALAPPDATA%\JockyLab` to the user/SYSTEM/administrators, and limits file collection to its `Collection` subdirectory. Process command lines are disabled. This is a foreground test, not a service installation. The launcher, enrollment, Quick Scan and demo-script/evidence/report workflow passed on the first real Windows PC on 15 September 2026. Foreground restart also passed without another token; the same endpoint completed a new system job. Service installation remains pending. If Windows blocks the unsigned prototype, record the message; do not disable protections.
 
 ## Manual foreground alternative
 

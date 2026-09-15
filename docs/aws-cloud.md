@@ -44,7 +44,7 @@ The console allows this VM on the Free plan. Its displayed Linux price is **$0.1
 - The hostname opens with trusted HTTPS: DNS, firewall and certificates work.
 - Each Windows PC appears online, completes its own scan, and returns evidence: the cross-machine workflow works.
 
-These are separate checks; none is a substitute for the next. The VM, Ubuntu bootstrap, six-container deployment, trusted public HTTPS, 11 cloud smoke checks and real Mac-to-AWS scan/evidence/report workflow passed. The actual Windows PC tests remain pending. See [verification status](STATUS.md) for evidence locations.
+These are separate checks; none is a substitute for the next. The VM, Ubuntu bootstrap, six-container deployment, trusted public HTTPS, 11 cloud smoke checks and real Mac-to-AWS scan/evidence/report workflow passed. The first real Windows foreground scan/script/evidence/report workflow also passed; foreground reconnect passed; service checks and PC 2 remain pending. See [verification status](STATUS.md) for evidence locations.
 
 Before the Free plan ends, export evidence and database backups to a location you control. Stopping a VM stops compute usage but retained disks still use storage; terminating this VM deletes its root disk. Do not use termination as a substitute for a backup. Check the live plan and credit status before any later session.
 

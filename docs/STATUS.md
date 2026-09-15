@@ -1,6 +1,6 @@
 # JOCKY verification status
 
-Checked 15 September 2026. **Working prototype deployed on AWS with trusted HTTPS and a real Mac-to-AWS workflow verified. The two-real-Windows-PC acceptance test is pending.** The full project brief has additional unfinished requirements; see [features.md](features.md).
+Checked 15 September 2026. **Working prototype deployed on AWS with trusted HTTPS and real Mac and first-Windows-PC workflows verified. Windows service checks and the second-PC acceptance test remain pending.** The full project brief has additional unfinished requirements; see [features.md](features.md).
 
 ## Boundaries
 
@@ -27,12 +27,17 @@ Checked 15 September 2026. **Working prototype deployed on AWS with trusted HTTP
 - A separately enrolled real Mac completed a Quick Scan with 846 observations and no collector errors. A harmless self-detection script completed with one observation and one detection.
 - Case `98442b5d-ed38-43be-af6b-ddb760076f9f` contains two SHA-256-verified evidence objects. Timeline, relationship graph, IOC hunt and HTML report generation passed. Counts describe this snapshot only.
 - Cloud-neutral sign-in/sidebar wording passes the production Docker build locally. Upload/restart is pending because SSH reconnection timed out after the Mac public egress IP changed; the live site still shows the earlier local-lab wording. The initial deployed source is `9730096`.
-- Windows ZIP prepared from CI source commit `321438f`; archive integrity checked. One real PC is available, but its launcher, enrollment, collectors and service behavior are not yet verified.
+- First real Windows PC: foreground launcher/enrollment and Quick Scan passed using the `321438f` CI binary. Quick Scan `84ce6bf2-d851-4863-8632-416d6b66298f` returned 424 observations with no collector errors.
+- A harmless JOCKY self-detection script returned one finding/detection with no errors. Two evidence objects verified successfully; timeline (425 observations), relationship graph and stored-observation IOC hunt passed.
+- Windows case `fb2f3657-f61b-458b-9036-5d61b1b6116a` produced report `0555b71a-ac42-45ee-bcea-dcaa4e50548d`, also opened in the browser. These results cover the foreground quick/script workflow, not every optional Windows collector or service behavior.
+- Foreground restart passed: the user restarted without a token, the same endpoint returned online, and system job `9a5307ab-179f-43db-be1b-a47153d0343c` completed with one observation and no errors.
+- The initial Windows enrollment transport error cleared on retry with the original binary; its cause was not established. Commit `c46af54` improves future diagnostics but was not the binary used for this successful Windows run.
 
 ## Local proof and output
 
 - Local dashboard: http://127.0.0.1:3100
 - `.local/aws/verification.json`: public HTTPS/authentication checks.
+- `.local/aws/windows-pc1-verification.json` and `.local/aws/windows-pc1-report.html`: first real Windows workflow proof and report.
 - `.local/aws/demo-verification.json` and `.local/aws/demo-report.html`: real Mac-to-AWS workflow and case report.
 - `.local/releases/jocky-aws-windows.zip`: first-PC handoff package; no enrollment token included.
 - `.local/final-verification.log`: final local test/build output.
@@ -46,7 +51,7 @@ These local files are intentionally ignored by Git. Use [the beginner walkthroug
 ## Remaining acceptance and limitations
 
 1. Track the AWS Free plan and export data before access expires. The console showed $100 credit and 29 days remaining before launch on 15 September 2026; this is a dated observation, not a live balance. See [AWS operations](aws-cloud.md).
-2. Install/enroll agents on the owner's two real Windows PCs. Verify service restart/reconnect, supported collectors and the two-PC case/IOC workflow.
+2. Verify service installation/restart and remaining supported collectors on PC 1. Enroll PC 2 separately and complete the two-Windows-PC case/IOC workflow.
 3. AI is disabled. A configured provider and its responses have not been live-tested. Optional YARA is also not enabled or live-tested.
 4. Production signing, backups/restore, sustained load and the additional feature gaps in features.md remain unfinished. Compiler Lab currently compares AST representations; it does not produce native binaries.
 

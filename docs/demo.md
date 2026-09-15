@@ -12,7 +12,7 @@ The browser does not inspect a remote PC by itself. That PC must run an enrolled
 
 Open https://jocky-lab.duckdns.org. In **Cases**, select **JOCKY DEMO · AWS HTTPS verification**. Its report and verified evidence come from a real Mac scan sent over public HTTPS. The scan returned 846 observations at that moment; another scan can return a different count.
 
-Private proof files are `.local/aws/demo-verification.json` and `.local/aws/demo-report.html`. The Windows test below still needs real Windows agents; Mac results do not complete it.
+Private proof files are `.local/aws/demo-verification.json` and `.local/aws/demo-report.html`. The first real Windows PC also passed Quick Scan (424 observations, no errors), harmless self-detection, two evidence checks and report generation. Open **JOCKY DEMO · Windows PC 1 verification** in Cases or Reports. Proof is in `.local/aws/windows-pc1-verification.json`. Foreground restart reused the same identity and a fresh system job passed. Service checks and the second-PC workflow remain pending.
 
 ## Walkthrough and success criteria
 
