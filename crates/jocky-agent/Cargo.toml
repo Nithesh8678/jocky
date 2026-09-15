@@ -1,0 +1,15 @@
+[package]
+name = "jocky-agent"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+[dependencies]
+serde.workspace = true
+serde_json.workspace = true
+jocky-runtime = { path = "../jocky-runtime" }
+jocky-common = { path = "../jocky-common" }
+reqwest = { version = "0.12", default-features = false, features = ["blocking", "json", "rustls-tls"] }
+hmac = "0.12"
+sha2 = "0.10"
+chrono = "0.4"
+uuid = { version = "1", features = ["v4"] }
