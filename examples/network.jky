@@ -1,0 +1,4 @@
+hunt connections {
+    c = network()
+    report c
+}

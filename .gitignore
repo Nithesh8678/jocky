@@ -13,3 +13,5 @@ __pycache__/
 .DS_Store
 coverage/
 artifacts/
+.jocky-agent.json
+apps/dashboard/public/monaco/vs/

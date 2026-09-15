@@ -1,0 +1,4 @@
+hunt process_inventory {
+    p = processes()
+    report p
+}

@@ -1,0 +1,8 @@
+hunt word_powershell {
+    p = processes()
+    suspect = p where name == "powershell.exe" and parent.name == "winword.exe"
+    report suspect
+    if len(suspect) > 0 {
+        alert "Word launched PowerShell; investigate context"
+    }
+}

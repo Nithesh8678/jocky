@@ -1,0 +1,8 @@
+hunt demo_agent {
+    p = processes()
+    matches = p where name == "jocky-agent"
+    report matches
+    if len(matches) > 0 {
+        alert "JOCKY DEMO: the forensic agent itself was observed"
+    }
+}

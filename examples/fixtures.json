@@ -1,0 +1,1 @@
+{"processes":[{"name":"powershell.exe","pid":200,"parent":{"name":"winword.exe","pid":100},"demo":true},{"name":"explorer.exe","pid":300,"parent":{"name":"winlogon.exe"},"demo":true}],"network":[{"remote_ip":"192.0.2.10","remote_port":443,"pid":200,"demo":true}]}
