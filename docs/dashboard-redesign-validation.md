@@ -14,6 +14,7 @@ All 15 dashboard destinations were restyled and regrouped. Navigation and page h
 - An existing benign test case accepted the named computer attachment. Reattaching the existing computer kept its attachment count at one. Changing the type listed evidence by collector/date/short ID.
 - Script studio Validate returned `valid: true` for the process-inventory example.
 - Compiler lab comparison returned structural equivalence and two representation hashes.
+- The light relationship graph rendered saved process observations and its zoom/fit controls.
 - Settings showed healthy backend dependencies, AI disabled and YARA unavailable.
 - Public AWS dashboard rebuilt successfully. New page names/help were observed in the public browser.
 - All 11 `scripts/verify-cloud.py` checks passed after deployment: HTTPS, health, anonymous denial, protected login cookies, five authenticated resources, origin rejection and logout.

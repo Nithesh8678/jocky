@@ -53,6 +53,8 @@
 
 **Redesign deployment:** the new dashboard was published to the existing AWS service on 16 September 2026; HTTPS/authentication/API checks passed and the new interface was observed in the public browser. See [redesign validation and testing limits](dashboard-redesign-validation.md).
 
+![The redesigned AWS workspace](../.local/guide/screenshots/18-aws-overview.jpg)
+
 **What has previously worked on AWS:** a real Mac and one real Windows PC completed the foreground collection workflow. Windows restart reused its enrolled identity. The second Windows PC, Windows background-service acceptance, optional AI, optional YARA and backup restoration still need testing. See [dated verification details](STATUS.md); these are historical tests, not a promise that an agent is online now.
 
 ## The words you need
@@ -116,7 +118,7 @@ flowchart TD
 
 ## Navigation and common controls
 
-![Sign-in screen](../.local/guide/screenshots/00-sign-in.png)
+![Sign-in screen](../.local/guide/screenshots/00-sign-in.jpg)
 
 ### New names versus the earlier dashboard
 
@@ -156,11 +158,13 @@ Some backend/API names remain unchanged. This mapping helps you follow older ins
 - **Filters:** page search boxes filter the records already fetched. They are not an unlimited database search.
 - **Selected computer:** several investigation pages share this choice while you move between them. Always check the target before Run. Refreshing the browser resets the current UI state and unsaved drafts.
 
-![Record inspection — plain fields and expandable JSON](../.local/guide/screenshots/16-record-details.png)
+![Record inspection — plain fields and expandable JSON](../.local/guide/screenshots/16-record-details.jpg)
+
+![Expandable page guidance](../.local/guide/screenshots/19-page-help.jpg)
 
 ## 1. Overview
 
-![Overview](../.local/guide/screenshots/01-overview.png)
+![Overview](../.local/guide/screenshots/01-overview.jpg)
 
 **Use it for:** deciding your next action and getting a quick workspace summary.
 
@@ -186,7 +190,7 @@ Some backend/API names remain unchanged. This mapping helps you follow older ins
 
 ## 2. Computers
 
-![Computers](../.local/guide/screenshots/02-computers.png)
+![Computers](../.local/guide/screenshots/02-computers.jpg)
 
 **Use it for:** enrollment, identifying a machine, and exploring its stored observations.
 
@@ -229,13 +233,15 @@ Search hostname, OS, user or IP; select a row. **Identity & risk** opens the ful
 
 **Changing a tab does not start a scan.** Observation rows show name, abbreviated ID, detail, source collector and collected time. **Inspect** opens the complete record. **Previous / Next** page through batches of 100.
 
+![Relationship graph using saved observations](../.local/guide/screenshots/21-relationship-graph.jpg)
+
 The graph displays at most **180 nodes**, even if more are available. Use its zoom/fit controls, pan the canvas, and click a node for its observation. It is a view of one job, not an all-time attack graph; missing nodes can be caused by the display limit.
 
 **Example:** to see Windows startup mechanisms, run a **persistence** collection in Collections, wait for the result, return here, select that PC, then open Persistence.
 
 ## 3. Collections
 
-![Collections](../.local/guide/screenshots/03-collections.png)
+![Collections](../.local/guide/screenshots/03-collections.jpg)
 
 **Use it for:** fresh data collection and tracking what happened to a request.
 
@@ -283,7 +289,7 @@ The lower observation browser lets you select a data category and inspect saved 
 
 ## 4. Findings
 
-![Findings](../.local/guide/screenshots/04-findings.png)
+![Findings](../.local/guide/screenshots/04-findings.jpg)
 
 **Use it for:** reviewing a rule match or alert and deciding whether it matters.
 
@@ -308,13 +314,15 @@ Resolving a finding does not delete evidence or terminate a process. Up to 500 f
 
 ## 5. Cases
 
-![Cases](../.local/guide/screenshots/05-cases.png)
+![Cases](../.local/guide/screenshots/05-cases.jpg)
 
 **Use it for:** keeping an investigation understandable to someone else.
 
 ### Create and open
 
 Enter a **title**, a **description/question**, and **severity**, then **Create case**. Example: title `Windows PC 1 — collection validation`; description `Confirm that the agent can return processes and preserve evidence. This is a benign test.` Open the case from its row.
+
+![Inside a case — choose records by name](../.local/guide/screenshots/20-case-details.jpg)
 
 ### Inside a case
 
@@ -342,7 +350,7 @@ A useful note has four parts:
 
 ## 6. Timeline
 
-![Timeline](../.local/guide/screenshots/06-timeline.png)
+![Timeline](../.local/guide/screenshots/06-timeline.jpg)
 
 **Use it for:** reading observations in time order.
 
@@ -358,7 +366,7 @@ This is not a continuous surveillance feed or a complete reconstructed attack ch
 
 ## 7. Indicators
 
-![Indicators](../.local/guide/screenshots/07-indicators.png)
+![Indicators](../.local/guide/screenshots/07-indicators.jpg)
 
 **Use it for:** asking “has JOCKY observed this exact value?”
 
@@ -386,7 +394,7 @@ To refresh the data first: Collections → intended computer(s) → **ioc** → 
 
 ## 8. Evidence
 
-![Evidence](../.local/guide/screenshots/08-evidence.png)
+![Evidence](../.local/guide/screenshots/08-evidence.jpg)
 
 **Use it for:** preserving and checking the bytes returned by a collection.
 
@@ -423,7 +431,7 @@ The stored object is normally **collection-result JSON**, not a full copy of the
 
 ## 9. Reports
 
-![Reports](../.local/guide/screenshots/09-reports.png)
+![Reports](../.local/guide/screenshots/09-reports.jpg)
 
 **Use it for:** a readable deliverable from a case.
 
@@ -439,7 +447,7 @@ A report can include case details, attached records, evidence hashes, timeline i
 
 ## 10. Detection rules
 
-![Detection rules](../.local/guide/screenshots/10-rules.png)
+![Detection rules](../.local/guide/screenshots/10-rules.jpg)
 
 **Use it for:** configuring conditions that produce findings from observations.
 
@@ -461,7 +469,7 @@ For the supported formats and implementation boundaries, see [feature matrix](fe
 
 ## 11. Script studio
 
-![Script studio](../.local/guide/screenshots/11-script-studio.png)
+![Script studio](../.local/guide/screenshots/11-script-studio.jpg)
 
 **Use it for:** writing a focused read-only investigation query.
 
@@ -507,7 +515,7 @@ The runtime is bounded: source, nesting, evaluation steps, record counts and col
 
 ## 12. Compiler lab
 
-![Compiler lab](../.local/guide/screenshots/12-compiler-lab.png)
+![Compiler lab](../.local/guide/screenshots/12-compiler-lab.jpg)
 
 **Use it for:** understanding how source becomes structured data.
 
@@ -536,7 +544,7 @@ Despite the older “Build A / Build B” labels, this feature does not produce 
 
 ## 13. AI assistant
 
-![AI assistant](../.local/guide/screenshots/13-ai-assistant.png)
+![AI assistant](../.local/guide/screenshots/13-ai-assistant.jpg)
 
 **Current lab status: disabled.** The disabled screen is intentional. An AI-generated interface does not imply that an AI model is connected behind it.
 
@@ -552,7 +560,7 @@ A model hosted within your own infrastructure can keep that context there. A con
 
 ## 14. Activity log
 
-![Activity log](../.local/guide/screenshots/14-activity-log.png)
+![Activity log](../.local/guide/screenshots/14-activity-log.jpg)
 
 **Use it for:** understanding actions recorded in the JOCKY workspace.
 
@@ -564,7 +572,7 @@ It is not Windows Event Viewer, a full cloud access log, or a recording of every
 
 ## 15. Settings
 
-![Settings](../.local/guide/screenshots/15-settings.png)
+![Settings](../.local/guide/screenshots/15-settings.jpg)
 
 **Use it for:** checking whether dependencies are working and understanding configured capabilities.
 
