@@ -15,7 +15,7 @@ function JockyEditor({
       keepCurrentModel
       path="inmemory://jocky/investigation.jky"
       height="390px"
-      theme="vs-dark"
+      theme="light"
       language="jocky"
       value={value}
       onChange={(v) => onChange(v || "")}

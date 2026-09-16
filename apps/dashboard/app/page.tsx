@@ -1,5 +1,5 @@
 "use client";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import {
   QueryClient,
   QueryClientProvider,
@@ -47,6 +47,7 @@ import {
 import dynamic from "next/dynamic";
 import { Button } from "../components/ui/button";
 import { api } from "../lib/api";
+import { pageGuide, navigationGroups } from "../lib/page-guide";
 const Editor = dynamic(() => import("../components/editor"), {
   ssr: false,
   loading: () => <p className="empty">Loading the local code editor…</p>,
@@ -129,6 +130,20 @@ function DataTable({
               key={r.id || i}
               onClick={() => onRow?.(r)}
               className={onRow ? "clickable" : ""}
+              tabIndex={onRow ? 0 : undefined}
+              onKeyDown={
+                onRow
+                  ? (event) => {
+                      if (
+                        event.target === event.currentTarget &&
+                        ["Enter", " "].includes(event.key)
+                      ) {
+                        event.preventDefault();
+                        onRow(r);
+                      }
+                    }
+                  : undefined
+              }
             >
               {columns.map(([n, f]) => (
                 <td key={n}>{f(r)}</td>
@@ -161,8 +176,8 @@ function SelectEndpoint({
       value={value}
       onChange={(e) => onChange(e.target.value)}
     >
-      <option value="">Choose endpoint</option>
-      {all && <option value="all">All enrolled endpoints</option>}
+      <option value="">Choose a computer</option>
+      {all && <option value="all">All enrolled computers</option>}
       {endpoints
         .filter((e) => !e.demo && !e.disabled)
         .map((e) => (
@@ -176,6 +191,8 @@ function SelectEndpoint({
 function App() {
   const queryClient = useQueryClient();
   const [page, setPage] = useState("Command Center");
+  const [navSearch, setNavSearch] = useState("");
+  const [attachmentKind, setAttachmentKind] = useState("endpoint");
   const [search, setSearch] = useState("");
   const [notice, setNotice] = useState("");
   const [error, setError] = useState("");
@@ -189,6 +206,9 @@ function App() {
   const [caseId, setCaseId] = useState("");
   const [live, setLive] = useState(false);
   const [collapsed, setCollapsed] = useState(false);
+  useEffect(() => {
+    if (window.innerWidth <= 760) setCollapsed(true);
+  }, []);
   const [obsKind, setObsKind] = useState("process");
   const [obsPage, setObsPage] = useState(0);
   const [viewGraph, setViewGraph] = useState(false);
@@ -223,7 +243,9 @@ function App() {
       api(
         "timeline?" +
           new URLSearchParams({
-            ...(endpoint ? { endpoint_id: endpoint } : {}),
+            ...(endpoint && endpoint !== "all"
+              ? { endpoint_id: endpoint }
+              : {}),
             ...(obsKind ? { kind: obsKind } : {}),
           }),
       ),
@@ -237,7 +259,9 @@ function App() {
           new URLSearchParams({
             kind: obsKind,
             offset: String(obsPage * 100),
-            ...(endpoint ? { endpoint_id: endpoint } : {}),
+            ...(endpoint && endpoint !== "all"
+              ? { endpoint_id: endpoint }
+              : {}),
           }),
       ),
     enabled: enabled && ["Endpoints", "Investigations"].includes(page),
@@ -245,7 +269,7 @@ function App() {
   const graph = useQuery({
     queryKey: ["graph", endpoint],
     queryFn: () => api("graph/" + endpoint),
-    enabled: enabled && !!endpoint && viewGraph,
+    enabled: enabled && !!endpoint && endpoint !== "all" && viewGraph,
   });
   const caseDetail = useQuery({
     queryKey: ["case", caseId],
@@ -356,9 +380,9 @@ function App() {
     return (
       <div className="page-heading">
         <div>
-          <div className="eyebrow">WORKSPACE / {title.toUpperCase()}</div>
-          <h1>{title}</h1>
-          <p>{description}</p>
+          <div className="eyebrow">{pageGuide[page].group}</div>
+          <h1>{pageGuide[page].label}</h1>
+          <p>{pageGuide[page].purpose || description}</p>
         </div>
         {action}
       </div>
@@ -456,7 +480,10 @@ function App() {
     );
   return (
     <div className={"shell " + (collapsed ? "collapsed" : "")}>
-      <aside className="sidebar">
+      <a className="skip-link" href="#workspace-content">
+        Skip to content
+      </a>
+      <aside className="sidebar" id="workspace-navigation">
         <div className="brand">
           J<span>O</span>CKY<span className="brand-dot">.</span>
         </div>
@@ -468,33 +495,70 @@ function App() {
           </div>
           <ChevronRight size={14} />
         </div>
-        <div className="nav-section">OPERATIONS</div>
-        <nav>
-          {nav.map(([label, Icon], i) => (
-            <div key={label}>
-              {i === 9 && (
-                <div className="nav-section">INTELLIGENCE & TOOLS</div>
-              )}
-              <button
-                title={label}
-                className={page === label ? "active" : ""}
-                onClick={() => {
-                  setPage(label);
-                  setSearch("");
-                  setError("");
-                  setNotice("");
-                  setViewGraph(false);
-                }}
-              >
-                <Icon size={17} />
-                <span>{label}</span>
-                {label === "Detections" &&
-                  ds.filter((d: any) => d.status === "new").length > 0 && (
-                    <em>{ds.filter((d: any) => d.status === "new").length}</em>
-                  )}
-              </button>
-            </div>
-          ))}
+        <div className="nav-search">
+          <Search size={16} />
+          <input
+            aria-label="Find a page"
+            placeholder="Find a page…"
+            value={navSearch}
+            onChange={(e) => setNavSearch(e.target.value)}
+          />
+        </div>
+        <nav aria-label="Main navigation">
+          {navigationGroups.map((group) => {
+            const items = nav.filter(
+              ([key]) =>
+                pageGuide[key].group === group &&
+                `${pageGuide[key].label} ${key}`
+                  .toLowerCase()
+                  .includes(navSearch.toLowerCase()),
+            );
+            return (
+              items.length > 0 && (
+                <div key={group} className="nav-group">
+                  <div className="nav-section">{group}</div>
+                  {items.map(([key, Icon]) => (
+                    <button
+                      key={key}
+                      title={pageGuide[key].label}
+                      aria-current={page === key ? "page" : undefined}
+                      className={page === key ? "active" : ""}
+                      onClick={() => {
+                        setPage(key);
+                        setSearch("");
+                        setError("");
+                        setNotice("");
+                        setViewGraph(false);
+                        if (
+                          endpoint === "all" &&
+                          key !== "Investigations" &&
+                          key !== "JOCKY Playground"
+                        )
+                          setEndpoint("");
+                        if (window.innerWidth <= 760) setCollapsed(true);
+                      }}
+                    >
+                      <Icon size={18} />
+                      <span>{pageGuide[key].label}</span>
+                      {key === "Detections" &&
+                        ds.filter((d: any) => d.status === "new").length >
+                          0 && (
+                          <em>
+                            {ds.filter((d: any) => d.status === "new").length}
+                          </em>
+                        )}
+                    </button>
+                  ))}
+                </div>
+              )
+            );
+          })}
+          {navSearch &&
+            !nav.some(([key]) =>
+              `${pageGuide[key].label} ${key}`
+                .toLowerCase()
+                .includes(navSearch.toLowerCase()),
+            ) && <p className="nav-empty">No matching pages.</p>}
         </nav>
         <div className="sidebar-bottom">
           <div className="agent-safety">
@@ -527,12 +591,14 @@ function App() {
             className="icon-button"
             title="Toggle sidebar"
             aria-label="Toggle sidebar"
+            aria-expanded={!collapsed}
+            aria-controls="workspace-navigation"
             onClick={() => setCollapsed(!collapsed)}
           >
             <PanelLeftClose size={18} />
           </button>
           <span className="breadcrumb">
-            Workspace <ChevronRight size={12} /> <b>{page}</b>
+            Workspace <ChevronRight size={12} /> <b>{pageGuide[page].label}</b>
           </span>
           <div className="topbar-right">
             <span className="live">
@@ -546,10 +612,23 @@ function App() {
                 year: "numeric",
               })}
             </span>
-            <span className="avatar">JL</span>
+            <span className="role-label">{me.data.role}</span>
           </div>
         </header>
-        <div className="main-content">
+        <div className="main-content" id="workspace-content" tabIndex={-1}>
+          <details className="page-help" key={page}>
+            <summary>
+              <BookOpen size={17} /> How to use{" "}
+              {pageGuide[page].label.toLowerCase()}
+              <span>Quick guide</span>
+            </summary>
+            <ol>
+              {pageGuide[page].steps.map((step) => (
+                <li key={step}>{step}</li>
+              ))}
+            </ol>
+            <p>{pageGuide[page].note}</p>
+          </details>
           {error && (
             <div className="error" role="alert">
               <AlertTriangle size={17} />
@@ -575,7 +654,7 @@ function App() {
                 "Command Center",
                 "Your fleet, evidence, and investigations. One connected view.",
                 <Button onClick={() => setPage("Investigations")}>
-                  <Plus size={16} /> New investigation
+                  <Plus size={16} /> Collect data
                 </Button>,
               )}
               <div className="status-strip">
@@ -583,7 +662,11 @@ function App() {
                   <i />{" "}
                   {health.data?.status === "healthy"
                     ? "Platform operational"
-                    : "Checking platform health"}
+                    : health.isError
+                      ? "Service status unavailable"
+                      : health.data
+                        ? "Platform needs attention"
+                        : "Checking platform health"}
                 </span>
                 <span>
                   Evidence-led investigation{" "}
@@ -597,16 +680,43 @@ function App() {
                   Service status <ArrowUpRight size={13} />
                 </button>
               </div>
+              <section className="workflow" aria-label="Investigation workflow">
+                <div>
+                  <span className="eyebrow">
+                    YOUR INVESTIGATION, STEP BY STEP
+                  </span>
+                  <h2>From a computer to a clear conclusion</h2>
+                  <p>
+                    Collect facts, review the context, then preserve what
+                    matters.
+                  </p>
+                </div>
+                <div className="workflow-steps">
+                  {[
+                    ["Endpoints", "Connect", "Enroll your computer"],
+                    ["Investigations", "Collect", "Capture fresh activity"],
+                    ["Detections", "Review", "Understand findings"],
+                    ["Cases", "Document", "Build a case & report"],
+                  ].map(([key, label, hint], i) => (
+                    <button key={key} onClick={() => setPage(key)}>
+                      <span className="step-number">{i + 1}</span>
+                      <strong>{label}</strong>
+                      <small>{hint}</small>
+                      <ArrowUpRight size={16} />
+                    </button>
+                  ))}
+                </div>
+              </section>
               <div className="metrics">
                 {[
                   [
-                    "Enrolled endpoints",
+                    "Enrolled computers",
                     summary.data?.endpoints || 0,
                     `${summary.data?.online || 0} reporting online`,
                     Monitor,
                   ],
                   [
-                    "Open detections",
+                    "Findings to review",
                     ds.filter((d: any) =>
                       ["new", "investigating"].includes(d.status),
                     ).length,
@@ -631,7 +741,9 @@ function App() {
                       <span>{label}</span>
                       <Icon size={18} />
                     </div>
-                    <strong>{num.toString().padStart(2, "0")}</strong>
+                    <strong>
+                      {summary.isPending || summary.isError ? "—" : num}
+                    </strong>
                     <small>{sub}</small>
                   </div>
                 ))}
@@ -640,10 +752,10 @@ function App() {
                 <section className="panel">
                   <div className="panel-head">
                     <h2>
-                      Fleet overview <span className="count">{es.length}</span>
+                      Your computers <span className="count">{es.length}</span>
                     </h2>
                     <button onClick={() => setPage("Endpoints")}>
-                      View endpoints <ArrowUpRight size={14} />
+                      View computers <ArrowUpRight size={14} />
                     </button>
                   </div>
                   <DataTable
@@ -697,7 +809,7 @@ function App() {
                       Agents connect outbound. No inbound endpoint ports.
                     </span>
                     <button onClick={() => setPage("Endpoints")}>
-                      Enroll an endpoint →
+                      Connect a computer →
                     </button>
                   </div>
                 </section>
@@ -721,12 +833,12 @@ function App() {
                         />
                         <Tooltip
                           contentStyle={{
-                            background: "#16212c",
-                            border: "1px solid #334453",
+                            background: "#ffffff",
+                            border: "1px solid #dce5e9",
                           }}
                         />
                         <Bar dataKey="value" radius={[4, 4, 0, 0]}>
-                          {["#28bca4", "#e8ae57", "#ea6578"].map((c) => (
+                          {["#238575", "#c39545", "#c25c76"].map((c) => (
                             <Cell key={c} fill={c} />
                           ))}
                         </Bar>
@@ -741,7 +853,7 @@ function App() {
               <div className="dashboard-grid">
                 <section className="panel">
                   <div className="panel-head">
-                    <h2>Recent detections</h2>
+                    <h2>Recent findings</h2>
                     <button onClick={() => setPage("Detections")}>
                       View all <ArrowUpRight size={14} />
                     </button>
@@ -866,7 +978,7 @@ function App() {
                       ),
                     ],
                     ["USER", (e) => e.info.user || "—"],
-                    ["IP", (e) => <code>{e.info.ip || "—"}</code>],
+                    ["CONNECTION IP", (e) => <code>{e.info.ip || "—"}</code>],
                     ["STATUS", (e) => <Badge value={e.status} />],
                     [
                       "RISK",
@@ -1295,75 +1407,43 @@ function App() {
                       )
                     }
                   >
-                    <select name="kind" aria-label="Attachment type">
-                      <option value="endpoint">Endpoint</option>
+                    <select
+                      name="kind"
+                      aria-label="Attachment type"
+                      value={attachmentKind}
+                      onChange={(e) => setAttachmentKind(e.target.value)}
+                    >
+                      <option value="endpoint">Computer</option>
                       <option value="evidence">Evidence</option>
-                      <option value="detection">Detection</option>
+                      <option value="detection">Finding</option>
                     </select>
-                    <input
+                    <select
                       name="id"
-                      placeholder="Full record ID — copy from Inspect"
-                      aria-label="Record ID"
+                      aria-label="Record to attach"
                       required
-                    />
+                      key={attachmentKind}
+                      defaultValue=""
+                    >
+                      <option value="" disabled>
+                        Choose a record to attach
+                      </option>
+                      {(attachmentKind === "endpoint"
+                        ? es
+                        : attachmentKind === "evidence"
+                          ? ev
+                          : ds
+                      ).map((record: any) => (
+                        <option key={record.id} value={record.id}>
+                          {record.hostname ||
+                            record.title ||
+                            `${record.collector} · ${time(record.created_at)}`}{" "}
+                          · {short(record.id)}
+                        </option>
+                      ))}
+                    </select>
                     <Button variant="outline">Attach record</Button>
                   </form>
-                  <div className="attachment-picker">
-                    {es.map((e: any) => (
-                      <Button
-                        key={e.id}
-                        variant="ghost"
-                        onClick={() =>
-                          act(
-                            () =>
-                              api("cases/" + caseId + "/attach", {
-                                kind: "endpoint",
-                                id: e.id,
-                              }),
-                            "Endpoint attached",
-                          )
-                        }
-                      >
-                        + {e.hostname}
-                      </Button>
-                    ))}
-                    {ev.slice(0, 5).map((e: any) => (
-                      <Button
-                        key={e.id}
-                        variant="ghost"
-                        onClick={() =>
-                          act(
-                            () =>
-                              api("cases/" + caseId + "/attach", {
-                                kind: "evidence",
-                                id: e.id,
-                              }),
-                            "Evidence attached",
-                          )
-                        }
-                      >
-                        + Evidence {short(e.id)}
-                      </Button>
-                    ))}
-                    {ds.slice(0, 5).map((d: any) => (
-                      <Button
-                        key={d.id}
-                        variant="ghost"
-                        onClick={() =>
-                          act(
-                            () =>
-                              api("cases/" + caseId + "/attach", {
-                                kind: "detection",
-                                id: d.id,
-                              }),
-                            "Detection attached",
-                          )
-                        }
-                      >
-                        + Detection {short(d.id)}
-                      </Button>
-                    ))}
-                  </div>
+
                   <p className="muted">
                     Attached: {caseDetail.data.endpoints.length} endpoints ·{" "}
                     {caseDetail.data.evidence.length} evidence ·{" "}
@@ -1436,7 +1516,7 @@ function App() {
                 ) : (timeline.data || []).length ? (
                   (timeline.data || []).map((t: any) => (
                     <button key={t.id} onClick={() => setDetail(t.observation)}>
-                      <time>{new Date(t.timestamp).toLocaleTimeString()}</time>
+                      <time>{time(t.timestamp)}</time>
                       <i />
                       <div>
                         <Badge value={t.observation.kind} />
@@ -1793,7 +1873,13 @@ function App() {
                   <span className="mono cyan">investigation.jky</span>
                   <span className="muted">Safe forensic built-ins only</span>
                 </div>
-                <Editor value={source} onChange={setSource} />
+                <Editor
+                  value={source}
+                  onChange={(value) => {
+                    setSource(value);
+                    setCompiler(null);
+                  }}
+                />
                 <div className="panel-foot actions">
                   {["check", "ast", "tokens", "fmt"].map((m) => (
                     <Button
@@ -1855,7 +1941,13 @@ function App() {
                   Their byte hashes differ, while deserializing them gives the
                   same syntax tree.
                 </p>
-                <Editor value={source} onChange={setSource} />
+                <Editor
+                  value={source}
+                  onChange={(value) => {
+                    setSource(value);
+                    setCompiler(null);
+                  }}
+                />
                 <Button
                   disabled={busy}
                   onClick={() =>
@@ -1902,15 +1994,14 @@ function App() {
                     <Terminal size={38} />
                     <h2>Connect an AI provider</h2>
                     <p>
-                      AI is currently disabled. Configure{" "}
-                      <code>AI_PROVIDER=ollama</code> and a local model, or
-                      explicitly configure an OpenAI-compatible service in{" "}
-                      <code>.env</code>, then restart the API.
+                      AI is currently disabled. Your administrator can connect a
+                      model provider on the server. The rest of your
+                      investigation tools are available without AI.
                     </p>
                     <p>
-                      With a local model, investigation context stays on your
-                      machine. A cloud provider receives the selected
-                      observation context.
+                      A model running on your own server can keep context within
+                      your infrastructure. An external provider receives the
+                      selected investigation context.
                     </p>
                     <Badge value="disabled" />
                   </div>
@@ -2157,33 +2248,96 @@ function App() {
         </div>
       </main>
       {detail && (
-        <div className="modal-backdrop" onClick={() => setDetail(null)}>
-          <section
-            className="modal"
-            role="dialog"
-            aria-modal="true"
-            aria-label="Record details"
-            onClick={(e) => e.stopPropagation()}
-          >
-            <div className="panel-head">
-              <h2>Record details & provenance</h2>
-              <Button
-                autoFocus
-                variant="outline"
-                onClick={() => setDetail(null)}
-              >
-                Close
-              </Button>
-            </div>
-            <p className="muted">
-              IDs connect observations, jobs, endpoints, and evidence. Sensitive
-              tokens stay in this view.
-            </p>
-            <pre className="output">{pretty(detail)}</pre>
-          </section>
-        </div>
+        <RecordDialog value={detail} onClose={() => setDetail(null)} />
       )}
     </div>
+  );
+}
+function RecordDialog({ value, onClose }: { value: any; onClose: () => void }) {
+  const ref = useRef<HTMLDialogElement>(null);
+  useEffect(() => {
+    const dialog = ref.current;
+    dialog?.showModal();
+    return () => dialog?.close();
+  }, []);
+  const fields = Object.entries(value).filter(
+    ([key, item]) =>
+      item !== null &&
+      typeof item !== "object" &&
+      !/token|secret|password/i.test(key),
+  );
+  const sensitive = Object.keys(value).some((key) =>
+    /token|secret|password/i.test(key),
+  );
+  return (
+    <dialog
+      ref={ref}
+      className="record-dialog"
+      aria-labelledby="record-title"
+      onCancel={onClose}
+      onClick={(event) => {
+        if (event.target === event.currentTarget) {
+          const rect = event.currentTarget.getBoundingClientRect();
+          if (
+            event.clientX < rect.left ||
+            event.clientX > rect.right ||
+            event.clientY < rect.top ||
+            event.clientY > rect.bottom
+          )
+            onClose();
+        }
+      }}
+    >
+      <div className="panel-head">
+        <div>
+          <span className="eyebrow">INSPECT RECORD</span>
+          <h2 id="record-title">Details & source information</h2>
+        </div>
+        <Button autoFocus variant="outline" onClick={onClose}>
+          Close
+        </Button>
+      </div>
+      <div className="padded">
+        {sensitive ? (
+          <p className="info">
+            This record contains a credential. Copy it only into the intended
+            agent setup. Keep it out of screenshots and reports.
+          </p>
+        ) : (
+          <p className="muted">
+            Use the IDs to connect this record to its computer, collection and
+            evidence. Press Escape to close.
+          </p>
+        )}
+        {fields.length > 0 && (
+          <dl className="record-fields">
+            {fields.map(([key, item]) => (
+              <div key={key}>
+                <dt>{key.replaceAll("_", " ")}</dt>
+                <dd>
+                  {typeof item === "boolean"
+                    ? item
+                      ? "Yes"
+                      : "No"
+                    : String(item)}
+                </dd>
+              </div>
+            ))}
+          </dl>
+        )}
+        <details
+          className="raw-details"
+          open={sensitive || fields.length === 0}
+        >
+          <summary>
+            {sensitive
+              ? "Enrollment response — keep private"
+              : "Complete record (JSON)"}
+          </summary>
+          <pre className="output">{pretty(value)}</pre>
+        </details>
+      </div>
+    </dialog>
   );
 }
 function ObservationTable({

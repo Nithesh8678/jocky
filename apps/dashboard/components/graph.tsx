@@ -8,21 +8,19 @@ export default function Graph({
   data: any;
   onSelect: (v: any) => void;
 }) {
-  const nodes = data.nodes
-    .slice(0, 180)
-    .map((n: any, i: number) => ({
-      id: n.id,
-      position: { x: (i % 6) * 230, y: Math.floor(i / 6) * 110 },
-      data: { label: n.label, observation: n.observation },
-      style: {
-        background: n.kind === "network" ? "#17353a" : "#18232d",
-        color: "#dceaf5",
-        border: "1px solid #385267",
-        borderRadius: 7,
-        fontSize: 11,
-        width: 190,
-      },
-    }));
+  const nodes = data.nodes.slice(0, 180).map((n: any, i: number) => ({
+    id: n.id,
+    position: { x: (i % 6) * 230, y: Math.floor(i / 6) * 110 },
+    data: { label: n.label, observation: n.observation },
+    style: {
+      background: n.kind === "network" ? "#e0f2f1" : "#ffffff",
+      color: "#243c48",
+      border: "1px solid #abc8c7",
+      borderRadius: 7,
+      fontSize: 11,
+      width: 190,
+    },
+  }));
   const ids = new Set(nodes.map((x: any) => x.id));
   const edges = data.edges
     .filter((e: any) => ids.has(e.source) && ids.has(e.target))
@@ -38,7 +36,7 @@ export default function Graph({
         edges={edges}
         onNodeClick={(_, n) => onSelect(n.data.observation)}
         fitView
-        colorMode="dark"
+        colorMode="light"
       >
         <Background gap={24} />
         <Controls />
