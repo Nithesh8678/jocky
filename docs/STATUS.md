@@ -26,7 +26,7 @@ Checked 15 September 2026. **Working prototype deployed on AWS with trusted HTTP
 - `scripts/verify-cloud.py`: 11 checks passed for HTTPS/HSTS, backing-service health, anonymous denial, protected login cookies, authenticated resource reads, origin rejection and logout.
 - A separately enrolled real Mac completed a Quick Scan with 846 observations and no collector errors. A harmless self-detection script completed with one observation and one detection.
 - Case `98442b5d-ed38-43be-af6b-ddb760076f9f` contains two SHA-256-verified evidence objects. Timeline, relationship graph, IOC hunt and HTML report generation passed. Counts describe this snapshot only.
-- Cloud-neutral sign-in/sidebar wording passes the production Docker build locally. Upload/restart is pending because SSH reconnection timed out after the Mac public egress IP changed; the live site still shows the earlier local-lab wording. The initial deployed source is `9730096`.
+- The dashboard was redesigned and deployed on 16 September 2026: light slate/teal styling, grouped navigation, all 15 pages with beginner help, named case attachments and accessible record inspection. The public browser shows the new interface; all 11 cloud smoke checks passed again. See [dashboard verification](dashboard-redesign-validation.md) and [the full handbook](USER_GUIDE.md).
 - First real Windows PC: foreground launcher/enrollment and Quick Scan passed using the `321438f` CI binary. Quick Scan `84ce6bf2-d851-4863-8632-416d6b66298f` returned 424 observations with no collector errors.
 - A harmless JOCKY self-detection script returned one finding/detection with no errors. Two evidence objects verified successfully; timeline (425 observations), relationship graph and stored-observation IOC hunt passed.
 - Windows case `fb2f3657-f61b-458b-9036-5d61b1b6116a` produced report `0555b71a-ac42-45ee-bcea-dcaa4e50548d`, also opened in the browser. These results cover the foreground quick/script workflow, not every optional Windows collector or service behavior.
@@ -34,6 +34,10 @@ Checked 15 September 2026. **Working prototype deployed on AWS with trusted HTTP
 - The initial Windows enrollment transport error cleared on retry with the original binary; its cause was not established. Commit `c46af54` improves future diagnostics but was not the binary used for this successful Windows run.
 
 ## Local proof and output
+
+- `.local/guide/JOCKY-HANDBOOK.md`: complete illustrated beginner handbook; `.local/JOCKY-HANDBOOK.zip` includes screenshots and companion documentation.
+- `.local/aws/dashboard-redesign-verification.json`: post-redesign HTTPS/authentication/API checks.
+- `.local/dashboard-redesign-build.log`: dashboard production Docker build output.
 
 - Local dashboard: http://127.0.0.1:3100
 - `.local/aws/verification.json`: public HTTPS/authentication checks.

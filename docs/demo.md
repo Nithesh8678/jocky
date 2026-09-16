@@ -1,5 +1,7 @@
 # Beginner demo: what to click and how to know it worked
 
+The redesigned sidebar uses simpler names. See [the complete illustrated handbook](USER_GUIDE.md) for every page and control.
+
 ## Understand the three pieces
 
 - **Dashboard:** the browser controls and displays an investigation.
@@ -18,15 +20,15 @@ Private proof files are `.local/aws/demo-verification.json` and `.local/aws/demo
 
 | Step | Action | Visible proof |
 |---|---|---|
-| 1 | Sign in | Command Center loads without an error banner |
-| 2 | Open Endpoints | Your device has the right OS/version and a recent last-seen time |
-| 3 | Select device → Quick Scan | Investigations shows queued/dispatched/running, then completed |
+| 1 | Sign in | Overview loads without an error banner |
+| 2 | Open Computers | Your device has the right OS/version and a recent last-seen time |
+| 3 | Select device → Quick Scan | Collections shows queued/dispatched/running, then completed |
 | 4 | Inspect result | A positive observation count; errors are empty for supported collectors |
 | 5 | Open endpoint → process | Real PIDs/names appear; Inspect shows collector, endpoint, job, timestamp, source |
 | 6 | Open endpoint → network | Addresses and states appear; no packet contents are collected |
-| 7 | Playground → Local demo process → Validate | Compiler output includes `valid: true` |
-| 8 | Run on endpoint | A script job completes; Investigations category `finding` contains reports and alerts |
-| 9 | Detections | A clearly labelled self-detection for JOCKY appears; this is harmless |
+| 7 | Script studio → Local demo process → Validate | Compiler output includes `valid: true` |
+| 8 | Run on endpoint | A script job completes; Collections category `finding` contains reports and alerts |
+| 9 | Findings | A clearly labelled self-detection for JOCKY appears; this is harmless |
 | 10 | Cases → create | New case is listed; attach endpoint, detection, evidence and add a note |
 | 11 | Timeline | Observation times and IDs appear; they are not inferred attack start times |
 | 12 | Endpoint → Relationship graph | Process-parent and network relationships; click a node for its source |
@@ -34,8 +36,8 @@ Private proof files are `.local/aws/demo-verification.json` and `.local/aws/demo
 | 14 | Evidence → Custody | Uploaded, attached, integrity-checked and viewed records in time order |
 | 15 | Reports → select case → Generate | Open report contains case details, evidence hashes, timeline, notes |
 | 16 | Indicators → filename `jocky-agent.exe` (Windows) | Hunt stored observations generates matches on PCs with that filename |
-| 17 | Investigations → All enrolled endpoints → ioc | Each endpoint gets its own target state and result |
-| 18 | AI Investigator | Disabled until configured; configured answers cite observation IDs and need review |
+| 17 | Collections → All enrolled endpoints → ioc | Each endpoint gets its own target state and result |
+| 18 | AI assistant | Disabled until configured; configured answers cite observation IDs and need review |
 
 ## Exact Windows acceptance demo
 

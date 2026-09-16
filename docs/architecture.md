@@ -10,7 +10,7 @@ flowchart LR
   D <-->|One-time ticket WebSocket| A
   W[Windows Rust agent] -->|Outbound HTTPS| A
   L[Linux Rust agent] -->|Outbound HTTPS| A
-  X[Mac development agent] -->|Loopback HTTP opt-in| A
+  X[Mac agent] -->|Outbound HTTPS in cloud; explicit loopback opt-in in local lab| A
   W --> C[Bounded read-only collectors / JOCKY interpreter]
 ```
 

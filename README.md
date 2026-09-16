@@ -61,6 +61,8 @@ Verification writes local reports under `.local/`. They can contain endpoint dat
 
 ## Documentation
 
+- [Complete dashboard handbook — every page, controls, examples and diagrams](docs/USER_GUIDE.md)
+
 - [Beginner walkthrough](docs/demo.md)
 - [Terminology](docs/terminology.md)
 - [Architecture](docs/architecture.md)

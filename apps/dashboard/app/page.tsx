@@ -191,6 +191,9 @@ function SelectEndpoint({
 function App() {
   const queryClient = useQueryClient();
   const [page, setPage] = useState("Command Center");
+  useEffect(() => {
+    window.scrollTo({ top: 0, behavior: "instant" });
+  }, [page]);
   const [navSearch, setNavSearch] = useState("");
   const [attachmentKind, setAttachmentKind] = useState("endpoint");
   const [search, setSearch] = useState("");
@@ -1445,9 +1448,9 @@ function App() {
                   </form>
 
                   <p className="muted">
-                    Attached: {caseDetail.data.endpoints.length} endpoints ·{" "}
+                    Attached: {caseDetail.data.endpoints.length} computers ·{" "}
                     {caseDetail.data.evidence.length} evidence ·{" "}
-                    {caseDetail.data.detections.length} detections
+                    {caseDetail.data.detections.length} findings
                   </p>
                   <form
                     className="inline-form"
@@ -1922,9 +1925,9 @@ function App() {
                 </section>
               )}
               <div className="info">
-                Run creates a real agent job. Open Investigations → finding to
-                read the returned reports and alerts. Validation never executes
-                your script.
+                Run creates a real agent job. Open Collections → finding to read
+                the returned reports and alerts. Validation never executes your
+                script.
               </div>
             </>
           )}
@@ -2058,7 +2061,7 @@ function App() {
                           setPage("JOCKY Playground");
                         }}
                       >
-                        Review in Playground
+                        Review in Script studio
                       </Button>
                     </>
                   )}
